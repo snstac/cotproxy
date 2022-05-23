@@ -44,7 +44,7 @@ COTProxy is Copyright 2022 Greg Albrecht
 
 License
 =======
-PyTAK is licensed under the Apache License, Version 2.0. See LICENSE for details.
+COTProxy is licensed under the Apache License, Version 2.0. See LICENSE for details.
 
 Style
 =====
