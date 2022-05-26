@@ -33,12 +33,11 @@ class NetClient(asyncio.Protocol):
         _logger.propagate = False
     logging.getLogger("asyncio").setLevel(cotproxy.LOG_LEVEL)
 
-    def __init__(self, ready, msg_queue, config) -> None:
+    def __init__(self, ready, msg_queue) -> None:
         self.transport = None
         self.address = None
         self.ready = ready
         self.msg_queue = msg_queue
-        self.config = config["cotproxy"]
 
     def handle_data(self, data) -> None:
         """Handles received TCP data."""
@@ -81,8 +80,8 @@ class NetWorker(pytak.Worker):
 
         self.config = config["cotproxy"]
 
-        self.tcp_port = int(self.config.get("TCP_LISTEN_PORT")) or cotproxy.DEFAULT_TCP_LISTEN_PORT
-        self.listen_host = self.config.get("LISTEN_HOST") or "0.0.0.0"
+        self.tcp_port = int(self.config.get("TCP_LISTEN_PORT", cotproxy.DEFAULT_TCP_LISTEN_PORT))
+        self.listen_host = self.config.get("LISTEN_HOST", "0.0.0.0")
 
     async def run(self, number_of_iterations=-1):
         """Runs this Thread."""
@@ -91,7 +90,7 @@ class NetWorker(pytak.Worker):
 
         ready = asyncio.Event()
         await loop.create_server(
-            lambda: NetClient(ready, self.msg_queue, self.config),
+            lambda: NetClient(ready, self.msg_queue),
             self.listen_host,
             self.tcp_port,
         )
