@@ -69,7 +69,7 @@ def cli():
     # Read config:
     env_vars = os.environ
     env_vars["COT_URL"] = env_vars.get("COT_URL", cotproxy.DEFAULT_COT_URL)
-    env_vars["DEBUG"] = env_vars.get("DEBUG", 0)
+    #env_vars["DEBUG"] = env_vars.get("DEBUG", 0)
     config = configparser.ConfigParser(env_vars)
 
     config_file = cli_args.get("CONFIG_FILE")
