@@ -151,7 +151,7 @@ class COTProxyWorker(pytak.MessageWorker):
         uid: str = event.attrib.get("uid")
         callsign: str = cotproxy.get_callsign(event)
 
-        if bool(int(self.config.get("AUTO_ADD"))) and uid:
+        if self.config.getboolean("AUTO_ADD") and uid:
             self._logger.info("Adding UID=%s", uid)
 
             # Create a COT Object
