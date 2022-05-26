@@ -81,16 +81,12 @@ class NetWorker(pytak.Worker):
 
         self.config = config["cotproxy"]
 
-        self.tcp_port = int(
-            self.config.get("TCP_LISTEN_PORT") or cotproxy.DEFAULT_TCP_LISTEN_PORT
-        )
+        self.tcp_port = int(self.config.get("TCP_LISTEN_PORT")) or cotproxy.DEFAULT_TCP_LISTEN_PORT
         self.listen_host = self.config.get("LISTEN_HOST") or "0.0.0.0"
 
     async def run(self, number_of_iterations=-1):
         """Runs this Thread."""
-        self._logger.info(
-            "Running NetWorker, TCP_LISTEN_PORT=%s", self.config.get("TCP_LISTEN_PORT")
-        )
+        self._logger.info("Running NetWorker on %s:%s", self.listen_host, self.tcp_port)
         loop = asyncio.get_event_loop()
 
         ready = asyncio.Event()
