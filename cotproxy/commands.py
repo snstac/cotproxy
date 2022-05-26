@@ -80,7 +80,7 @@ def cli():
         config.add_section("cotproxy")
 
     if sys.version_info[:2] >= (3, 7):
-        asyncio.run(main(config), debug=config["cotproxy"].getboolean("DEBUG"))
+        asyncio.run(main(config)) #, debug=config["cotproxy"].getboolean("DEBUG"))
     else:
         loop = get_running_loop()
         try:
