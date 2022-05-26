@@ -28,7 +28,7 @@ install:
 	python setup.py install
 
 uninstall:
-	pip uninstall -y pytak
+	pip uninstall -y cotproxy
 
 reinstall: uninstall install
 
@@ -42,22 +42,26 @@ publish:
 	python setup.py publish
 
 pep8:
-	flake8 --max-complexity 12 --exit-zero pytak/*.py
+	flake8 --max-line-length=88 --extend-ignore=E203 --exit-zero cotproxy/*.py
 
 flake8: pep8
 
 lint:
 	pylint --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" \
-		-r n pytak/*.py || exit 0
+		--max-line-length=88 -r n cotproxy/*.py || exit 0
 
 pylint: lint
 
-test: lint pep8 nosetests
+checkmetadata:
+	python setup.py check -s --restructuredtext
 
 mypy:
 	mypy --strict .
 
 pytest:
-	pytest --cov=pytak
+	pytest
 
 test: install_editable install_test pytest
+
+test_cov:
+	pytest -cov=cotproxy

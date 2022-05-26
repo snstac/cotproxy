@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -48,7 +48,7 @@ setuptools.setup(
     packages=[__title__],
     package_dir={__title__: __title__},
     url=f"https://github.com/ampledata/{__title__}",
-    description="Cursor On Target Transform Proxy",
+    description="Cursor-On-Target Transform Proxy",
     author="Greg Albrecht",
     author_email="oss@undef.net",
     package_data={"": ["LICENSE"]},

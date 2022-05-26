@@ -1,6 +1,3 @@
-.vscode/
-config.ini
-cotproxy.ini
 *.deb
 *.egg
 *.egg-info/
@@ -32,4 +29,5 @@ output.xml
 pylint.log
 redis-server.log
 redis-server/
+.python-version
 __pycache__

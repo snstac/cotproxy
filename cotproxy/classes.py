@@ -5,7 +5,6 @@
 
 import asyncio
 import logging
-import urllib
 import xml.etree.ElementTree as ET
 
 import aiohttp
@@ -34,13 +33,15 @@ class NetClient(asyncio.Protocol):
         _logger.propagate = False
     logging.getLogger("asyncio").setLevel(cotproxy.LOG_LEVEL)
 
-    def __init__(self, ready, msg_queue, opts) -> None:
+    def __init__(self, ready, msg_queue, config) -> None:
         self.transport = None
         self.address = None
         self.ready = ready
         self.msg_queue = msg_queue
+        self.config = config["cotproxy"]
 
-    def handle_message(self, data) -> None:
+    def handle_data(self, data) -> None:
+        """Handles received TCP data."""
         # self._logger.debug('Received Data="%s"', data)
         if "<?xml" in data:
             root = cotproxy.parse_cot(data)
@@ -51,17 +52,20 @@ class NetClient(asyncio.Protocol):
                 self.msg_queue.put_nowait(event)
 
     def connection_made(self, transport):
+        """Called when a connection is made."""
         self.address = transport.get_extra_info("peername")
         self._logger.debug("Connection from %s", self.address)
         self.transport = transport
         self.ready.set()
 
     def data_received(self, data):
-        message = data.decode()
-        self._logger.debug("Data received: {!r}".format(message))
-        self.handle_message(message)
+        """Called when data is received."""
+        data = data.decode()
+        self._logger.debug("Data received: %r", data)
+        self.handle_data(data)
 
     def connection_lost(self, exc):
+        """Called when a connection is lost."""
         self.ready.clear()
         self._logger.exception(exc)
         self._logger.warning("Disconnected from %s", self.address)
@@ -78,17 +82,19 @@ class NetWorker(pytak.Worker):
         self.config = config["cotproxy"]
 
         self.tcp_port = int(
-            self.config.get("TCP_LISTEN_PORT") or cotproxy.TCP_LISTEN_PORT
+            self.config.get("TCP_LISTEN_PORT") or cotproxy.DEFAULT_TCP_LISTEN_PORT
         )
         self.listen_host = self.config.get("LISTEN_HOST") or "0.0.0.0"
 
-    async def run(self):
+    async def run(self, number_of_iterations=-1):
         """Runs this Thread."""
-        self._logger.info("Running NetWorker")
+        self._logger.info(
+            "Running NetWorker, TCP_LISTEN_PORT=%s", self.config.get("TCP_LISTEN_PORT")
+        )
         loop = asyncio.get_event_loop()
 
         ready = asyncio.Event()
-        server = await loop.create_server(
+        await loop.create_server(
             lambda: NetClient(ready, self.msg_queue, self.config),
             self.listen_host,
             self.tcp_port,
@@ -115,16 +121,18 @@ class COTProxyWorker(pytak.MessageWorker):
         self.session = None
 
         self.config = config["cotproxy"]
-        self.cpapi_url = self.config.get("CPAPI_URL", cotproxy.DEFAULT_CPAPI_URL)
-        self.pass_all = bool(
-            int(self.config.get("PASS_ALL", cotproxy.DEFAULT_PASS_ALL))
+        self.cpapi_url: str = self.config.get("CPAPI_URL", cotproxy.DEFAULT_CPAPI_URL)
+        self.pass_all: bool = self.config.getboolean(
+            "PASS_ALL", cotproxy.DEFAULT_PASS_ALL
         )
-        self.auto_add = bool(
-            int(self.config.get("AUTO_ADD", cotproxy.DEFAULT_AUTO_ADD))
+        self.auto_add: bool = self.config.getboolean(
+            "AUTO_ADD", cotproxy.DEFAULT_AUTO_ADD
         )
 
-    async def run(self) -> None:
-        self._logger.info("Running COTProxyWorker")
+    async def run(self, number_of_iterations=-1) -> None:
+        self._logger.info(
+            "Running COTProxyWorker, COT_URL=%s", self.config.get("COT_URL")
+        )
         try:
             async with aiohttp.ClientSession(self.cpapi_url) as self.session:
                 while 1:
@@ -133,10 +141,10 @@ class COTProxyWorker(pytak.MessageWorker):
                     if tf_msg:
                         await self._handle_msg(tf_msg)
         except Exception as exc:
-            self._logger.warn(
+            self._logger.warning(
                 "Connection to %s raised an error: %s", self.cpapi_url, exc
             )
-            self._logger.warn("Will continue without proxy.")
+            self._logger.warning("Will continue without proxy.")
             self._logger.debug(exc)
             while 1:
                 tf_msg: ET.Element = await self.tf_queue.get()
@@ -168,10 +176,10 @@ class COTProxyWorker(pytak.MessageWorker):
                 async with self.session.post(tf_url, json=tf_payload) as resp:
                     self._logger.debug("TF Call: %s", resp.status)
 
-    async def _transform_event(self, event: ET.Element, tf: dict):
-        if tf.get("active"):
+    async def _transform_event(self, event: ET.Element, transform: dict):
+        if transform.get("active"):
             self._logger.info("Transforming UID=%s", event.attrib.get("uid"))
-            new_event: ET.Element = cotproxy.transform_cot(event, tf)
+            new_event: ET.Element = cotproxy.transform_cot(event, transform)
             self._logger.info(ET.tostring(new_event))
         else:
             new_event = event

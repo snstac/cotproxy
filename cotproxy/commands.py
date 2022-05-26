@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Cursor On Target Transform Proxy Commands."""
+"""COTProxy Commands."""
 
 import argparse
 import asyncio
-import collections
-import concurrent
 import configparser
 import logging
 import os
 import sys
-import urllib
+
 from urllib.parse import urlparse, ParseResult
 
 import pytak
@@ -31,8 +29,6 @@ __license__ = "Apache License, Version 2.0"
 
 
 async def main(config):
-    loop = get_running_loop()
-
     tx_queue: asyncio.Queue = asyncio.Queue()  # aka event_queue
     rx_queue: asyncio.Queue = asyncio.Queue()
     tf_queue: asyncio.Queue = asyncio.Queue()  # aka msg_queue
@@ -51,7 +47,7 @@ async def main(config):
 
     await tx_queue.put(pytak.hello_event("cotproxy"))
 
-    done, pending = await asyncio.wait(
+    done, _ = await asyncio.wait(
         set([rx_worker.run(), tx_worker.run(), msg_worker.run(), tf_worker.run()]),
         return_when=asyncio.FIRST_COMPLETED,
     )
@@ -70,16 +66,22 @@ def cli():
     namespace = parser.parse_args()
     cli_args = {k: v for k, v in vars(namespace).items() if v is not None}
 
-    # Read config file:
-    config = configparser.ConfigParser()
+    # Read config:
+    env_vars = os.environ
+    env_vars["COT_URL"] = env_vars.get("COT_URL", cotproxy.DEFAULT_COT_URL)
+    config = configparser.ConfigParser(env_vars)
+
     config_file = cli_args.get("CONFIG_FILE")
-    logging.info("Reading configuration from %s", config_file)
-    config.read(config_file)
+    if os.path.exists(config_file):
+        logging.info("Reading configuration from %s", config_file)
+        config.read(config_file)
+    else:
+        config.add_section("cotproxy")
 
     if sys.version_info[:2] >= (3, 7):
         asyncio.run(main(config), debug=config["cotproxy"].getboolean("DEBUG"))
     else:
-        loop = asyncio.get_event_loop()
+        loop = get_running_loop()
         try:
             loop.run_until_complete(main(config))
         finally:

@@ -1,4 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""COTProxy Functions."""
+
 import xml.etree.ElementTree as ET
+
+__author__ = "Greg Albrecht W2GMD <oss@undef.net>"
+__copyright__ = "Copyright 2022 Greg Albrecht"
+__license__ = "Apache License, Version 2.0"
 
 
 def parse_cot(msg: str) -> ET.Element:
@@ -21,6 +30,7 @@ def transform_cot(original, transform) -> ET.Element:
     uid = transform.get("uid")
     detail = original.find("detail")
     # assert uid == detail.attrib['uid']
+
     callsign = transform.get("callsign")
     if callsign:
         original.find("detail").attrib["callsign"] = callsign

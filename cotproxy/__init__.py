@@ -15,17 +15,19 @@ Cursor On Target Transform Proxy
 
 """
 
-from .constants import (  # NOQA
+from .constants import (
     LOG_LEVEL,
     LOG_FORMAT,
     DEFAULT_PASS_ALL,
     DEFAULT_AUTO_ADD,
     DEFAULT_CPAPI_URL,
+    DEFAULT_COT_URL,
+    DEFAULT_TCP_LISTEN_PORT,
 )
 
-from .classes import NetClient, NetWorker, COTProxyWorker  # NOQA
+from .classes import NetClient, NetWorker, COTProxyWorker
 
-from .functions import parse_cot, transform_cot, get_callsign, parse_cot_multi  # NOQA
+from .functions import parse_cot, transform_cot, get_callsign, parse_cot_multi
 
 __author__ = "Greg Albrecht W2GMD <oss@undef.net>"
 __copyright__ = "Copyright 2022 Greg Albrecht"
