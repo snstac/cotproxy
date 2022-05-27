@@ -41,14 +41,17 @@ class NetClient(asyncio.Protocol):
 
     def handle_data(self, data) -> None:
         """Handles received TCP data."""
-        # self._logger.debug('Received Data="%s"', data)
-        if "<?xml" in data:
-            root = cotproxy.parse_cot(data)
-            if root:
-                self.msg_queue.put_nowait(root)
-        else:
-            for event in cotproxy.parse_cot_multi(data):
-                self.msg_queue.put_nowait(event)
+        self._logger.debug('Received Data="%s"', data)
+        try:
+            if "<?xml" in data:
+                root = cotproxy.parse_cot(data)
+                if root:
+                    self.msg_queue.put_nowait(root)
+            else:
+                for event in cotproxy.parse_cot_multi(data):
+                    self.msg_queue.put_nowait(event)
+        except Exception as exc:
+            self._logger.exception(exc)
 
     def connection_made(self, transport):
         """Called when a connection is made."""
