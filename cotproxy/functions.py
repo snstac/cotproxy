@@ -40,4 +40,13 @@ def transform_cot(original, transform) -> ET.Element:
     if cot_type:
         original.attrib["type"] = cot_type
 
+    # <usericon iconsetpath="66f14976-4b62-4023-8edb-d8d2ebeaa336/Public Safety Air/CIV_FIXED_ISR.png"/>
+    icon = transform.get("icon")
+    if icon:
+        iconsetpath = f"66f14976-4b62-4023-8edb-d8d2ebeaa336/Public Safety Air/{icon}"
+        usericon = ET.Element("usericon")
+        usericon.set("iconsetpath", iconsetpath)
+        original.append(usericon)
+        print(ET.tostring(original))
+
     return original
