@@ -28,6 +28,9 @@ else:
 
 DEFAULT_PASS_ALL: bool = False
 DEFAULT_AUTO_ADD: bool = False
+DEFAULT_SLEEP_INTERVAL: int = 20
+
 DEFAULT_CPAPI_URL: str = "http://localhost:8080"
 DEFAULT_COT_URL: str = "udp://239.2.3.1:6969"  # ATAK Default multicast
-DEFAULT_TCP_LISTEN_PORT: int = 8087
+
+DEFAULT_LISTEN_URL: str = "udp://0.0.0.0:8087"

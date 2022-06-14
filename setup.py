@@ -48,6 +48,7 @@ setuptools.setup(
     packages=[__title__],
     package_dir={__title__: __title__},
     url=f"https://github.com/ampledata/{__title__}",
+    entry_points={"console_scripts": [f"{__title__} = {__title__}.commands:main"]},
     description="Cursor-On-Target Transform Proxy",
     author="Greg Albrecht",
     author_email="oss@undef.net",
@@ -57,8 +58,7 @@ setuptools.setup(
     long_description_content_type="text/x-rst",
     zip_safe=False,
     include_package_data=True,
-    install_requires=["pytak", "aiohttp==3.8.1"],
-    entry_points={"console_scripts": ["cotproxy = cotproxy.commands:cli"]},
+    install_requires=["pytak >= 5.0.0", "aiohttp==3.8.1"],
     classifiers=[
         "Programming Language :: Python",
         "License :: OSI Approved :: Apache Software License",
