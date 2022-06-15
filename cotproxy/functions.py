@@ -63,7 +63,7 @@ def parse_cot(msg: str) -> ET.Element:
 
 
 def parse_cot_multi(msg: str) -> ET.Element:
-    root = ET.fromstring(b"<root>" + msg + b"</root>")
+    root = ET.fromstring("<root>" + msg + "</root>")
     return root
 
 

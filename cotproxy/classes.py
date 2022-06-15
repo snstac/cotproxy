@@ -75,6 +75,7 @@ class NetListener(asyncio.Protocol):
 
     def datagram_received(self, data, addr):
         """Called when a UDP datagram is received."""
+        data = data.decode()
         self._logger.debug("Recieved from %s: '%s'", addr, data)
         for line in data.splitlines():
             self.handle_data(line)
@@ -83,7 +84,7 @@ class NetListener(asyncio.Protocol):
         """Handles received TCP data."""
         self._logger.debug("Received Data='%s'", data)
         try:
-            if b"<?xml" in data:
+            if "<?xml" in data:
                 root = cotproxy.parse_cot(data)
                 if root:
                     self.queue.put_nowait(root)
@@ -220,7 +221,6 @@ class COTProxyWorker(pytak.QueueWorker):
             Incoming COT event to transform.
         transform : `dict`
             Data struct of transforms to apply to event.
-
         """
         if transform.get("active", False):
             self._logger.info("%s Transformed", event.attrib.get("uid"))
@@ -233,15 +233,19 @@ class COTProxyWorker(pytak.QueueWorker):
 
     async def handle_data(self, data: ET.Element, use_proxy: bool = True) -> None:
         """
-        Handles the original COT Event (event).
+        Handles data from a queue. In this case, that data is unprocessed COT Events.
 
-        If the Event's UID matches a Transform in COT Proxy, we'll hand
-        it off to the transform method.
+        If the Event's UID:
+        - Matches an existing Transform: Hand Event off to `transform_event()`.
+        - Does not match an existing Transform: Hand Event off to `create_co_and_tf()`.
+        Finally, the Event will get handed-off to `pass_all()`.
 
-        If the Event's UID does not match a Transform, hand it off to the
-        create_object method.
-
-        :param data: Original COT, as popped from the Queue.
+        Parameters
+        ----------
+        data : `xml.etree.ElementTree.Element`
+            An unprocessed Cursor-On-Target Event.
+        use_proxy : `bool`
+            Determines if we should even query the COTProxy API.
         """
         uid: str = data.attrib.get("uid")
         if not uid:
