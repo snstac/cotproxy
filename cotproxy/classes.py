@@ -185,8 +185,6 @@ class COTProxyWorker(pytak.QueueWorker):
         uid: str = event.attrib.get("uid")
         callsign: str = cotproxy.get_callsign(event)
         remarks: str = event.find("detail").find("remarks")
-        if remarks:
-            remarks = remarks.text
 
         if not uid:
             self._logger.debug("Event had no UID, returning.")
@@ -208,8 +206,10 @@ class COTProxyWorker(pytak.QueueWorker):
                     "cot_uid": uid,
                     "cot_type": event.attrib.get("type"),
                     "callsign": callsign,
-                    "remarks": remarks,
                 }
+                if remarks:
+                    tf_payload["remarks"] = remarks.text
+
                 async with self.session.post(tf_url, json=tf_payload) as resp:
                     self._logger.debug("%s call status: %s", tf_url, resp.status)
 
