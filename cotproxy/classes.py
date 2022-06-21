@@ -209,6 +209,8 @@ class COTProxyWorker(pytak.QueueWorker):
                 }
                 if remarks:
                     tf_payload["remarks"] = remarks.text
+                else:
+                    tf_payload["remarks"] = None
 
                 async with self.session.post(tf_url, json=tf_payload) as resp:
                     self._logger.debug("%s call status: %s", tf_url, resp.status)
