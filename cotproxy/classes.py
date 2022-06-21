@@ -184,7 +184,9 @@ class COTProxyWorker(pytak.QueueWorker):
         """
         uid: str = event.attrib.get("uid")
         callsign: str = cotproxy.get_callsign(event)
-        remarks: str = event.find("detail").find("remarks").text
+        remarks: str = event.find("detail").find("remarks")
+        if remarks:
+            remarks = remarks.text
 
         if not uid:
             self._logger.debug("Event had no UID, returning.")
