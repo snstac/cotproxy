@@ -257,7 +257,7 @@ class COTProxyWorker(pytak.QueueWorker):
             return
 
         if use_proxy:
-            tf_url: str = f"/tf/{uid}.json"
+            tf_url: str = f"/tf/{uid}"
             async with self.session.get(tf_url) as response:
                 # If a Transform for this COT UID doesn't exist:
                 if response.status == 404:
