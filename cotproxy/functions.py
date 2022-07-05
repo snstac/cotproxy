@@ -19,6 +19,7 @@
 """COTProxy Functions."""
 
 import asyncio
+import platform
 import xml.etree.ElementTree as ET
 
 from configparser import SectionProxy
@@ -77,26 +78,44 @@ def transform_cot(original: ET.Element, transform: dict) -> ET.Element:
     """
     Transforms the original COT Event using the given transform definition.
     """
+    tfd: bool = False
     callsign = transform.get("callsign")
     if callsign:
+        tfd = True
         original.find("detail").attrib["callsign"] = callsign
         original.find("detail").find("contact").attrib["callsign"] = callsign
 
     cot_type = transform.get("cot_type")
     if cot_type:
+        tfd = True
         original.attrib["type"] = cot_type
 
     remark = transform.get("remark")
     if remark:
+        tfd = True
         original.set("remark", remark)
 
     # <usericon iconsetpath="66f14976-4b62-4023-8edb-d8d2ebeaa336/Public
     #  Safety Air/CIV_FIXED_ISR.png"/>
     icon = transform.get("icon")
     if icon:
+        tfd = True
+        # FIXME: Hard-coded, fix.
         iconsetpath = f"66f14976-4b62-4023-8edb-d8d2ebeaa336/Public Safety Air/{icon}"
         usericon = ET.Element("usericon")
         usericon.set("iconsetpath", iconsetpath)
         original.append(usericon)
+
+    video = transform.get("video")
+    if video:
+        tfd = True
+        __video = ET.Element("__video")
+        __video.set("url", video.get("url"))
+        original.append(__video)
+
+    _cotproxy_ = ET.Element("_cotproxy_")
+    _cotproxy_.set("tfd", tfd)
+    _cotproxy_.set("node", platform.node())
+    original.append(_cotproxy_)
 
     return original

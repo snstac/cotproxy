@@ -32,9 +32,10 @@ from .constants import (  # NOQA
     DEFAULT_PASS_ALL,
     DEFAULT_AUTO_ADD,
     DEFAULT_CPAPI_URL,
-    DEFAULT_COT_URL,
     DEFAULT_SLEEP_INTERVAL,
     DEFAULT_LISTEN_URL,
+    DEFAULT_KNOWN_CRAFT_FILE,
+    DEFAULT_SEED_FAA_REG,
 )
 
 from .classes import NetListener, NetWorker, COTProxyWorker  # NOQA
