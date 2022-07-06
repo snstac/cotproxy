@@ -2,7 +2,7 @@ cotproxy - Cursor On Target Transformation Proxy.
 *************************************************
 
 COTProxy is an inline Cursor On Target (COT) transformation proxy. Given a 
-matching UID & Transform, COT Event charactaristics can be changed, including 
+matching UID & Transform, COT Event characteristics can be changed, including 
 Callsign, Type, Icon, Video, et al. COTProxy's transform configurations are 
 managed via the COTProxyWeb front-end.
 
@@ -65,6 +65,53 @@ Environment Variables. Configuration Parameters are as follows:
 * ``SEED_FAA_REG``: [optional] If True, will set Tail/N-Number on seeded ICAO Hexs from FAA database. Default = ``True``.
 
 There are other configuration parameters, including TLS/SSL, available via `PyTAK <https://github.com/ampledata/pytak#configuration-parameters>`_.
+
+
+Installing with pyenv
+=====================
+
+In Debian 10/11::
+
+    $ sudo apt-get install make build-essential libssl-dev zlib1g-dev \
+        libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
+        libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev \
+        libffi-dev liblzma-dev git
+    $ curl https://pyenv.run | bash
+
+Add the following to your ~/.bashrc and restart your shell::
+
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
+
+Once back in::
+
+    $ pyenv install 3.9.13
+    ...Catch up on your expense reports, have a snack, stay hydrated...
+    $ pyenv shell 3.9.13
+    $ pyenv virtualenv pytakenv
+    $ pyenv activate pytakenv
+    $ python3 -m pip install --upgrade pip
+    $ mkdir ~/src
+    $ cd ~/src
+    $ git clone https://github.com/ampledata/cotproxy.git
+    $ cd cotproxy
+    $ python3 setup.py install
+    $ cd ~/src
+    $ git clone https://github.com/ampledata/cotproxyweb.git
+    $ cd cotproxyweb
+    $ python3 -m pip install -r requirements.txt
+    $ bash setup.sh
+    ... When prompted, select an admin password. ...
+
+You should now be able to connect to port :8000/admin from a web browser.
+
+Seed COTProxy Transforms frome existing Known Craft file, given a Known Craft 
+file named ``known_ps.csv``::
+
+    $ CPAPI_URL="http://localhost:8000/" KNOWN_CRAFT=known_ps.csv cotproxy-seed
+
 
 Source
 ======

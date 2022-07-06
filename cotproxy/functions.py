@@ -100,11 +100,9 @@ def transform_cot(original: ET.Element, transform: dict) -> ET.Element:
     icon = transform.get("icon")
     if icon:
         tfd = True
-        # FIXME: Hard-coded, fix.
-        iconsetpath = f"66f14976-4b62-4023-8edb-d8d2ebeaa336/Public Safety Air/{icon}"
         usericon = ET.Element("usericon")
-        usericon.set("iconsetpath", iconsetpath)
-        original.append(usericon)
+        usericon.set("iconsetpath", icon)
+        original.find("detail").append(usericon)
 
     video = transform.get("video")
     if video:
@@ -114,7 +112,7 @@ def transform_cot(original: ET.Element, transform: dict) -> ET.Element:
         original.append(__video)
 
     _cotproxy_ = ET.Element("_cotproxy_")
-    _cotproxy_.set("tfd", tfd)
+    _cotproxy_.set("tfd", str(tfd))
     _cotproxy_.set("node", platform.node())
     original.append(_cotproxy_)
 

@@ -85,6 +85,7 @@ class NetListener(asyncio.Protocol):
         self._logger.debug("Received Data='%s'", data)
         try:
             if "<?xml" in data:
+                data = data.strip('<?xml version="1.0" encoding="UTF-8"?>')
                 root = cotproxy.parse_cot(data)
                 if root:
                     self.queue.put_nowait(root)
@@ -92,8 +93,9 @@ class NetListener(asyncio.Protocol):
                 for event in cotproxy.parse_cot_multi(data):
                     self.queue.put_nowait(event)
         except Exception as exc:
-            self._logger.exception(exc)
-
+            # print(data)
+            self._logger.debug(exc)
+            
 
 class NetWorker(pytak.Worker):
 
@@ -227,7 +229,10 @@ class COTProxyWorker(pytak.QueueWorker):
             Data struct of transforms to apply to event.
         """
         if transform.get("active", False):
-            self._logger.info("%s Transformed", event.attrib.get("uid"))
+            self._logger.info("%s Transforming", event.attrib.get("uid"))
+            icon = transform.get("icon")
+            if icon:
+                transform["icon"] = await self.get_icon(icon)
             event: ET.Element = cotproxy.transform_cot(event, transform)
 
         if isinstance(event, ET.Element):
@@ -235,6 +240,17 @@ class COTProxyWorker(pytak.QueueWorker):
         else:
             self._logger.warning("Incoming event was not ET.Element")
 
+    async def get_icon(self, icon) -> None:
+        endpoint: str = f"/icon/{icon}"
+        async with self.session.get(endpoint) as response:
+            if response.status == 200:
+                resp = await response.json()
+                iconset_uuid = resp["iconset"]
+                endpoint = f"/iconset/{iconset_uuid}"
+                async with self.session.get(endpoint) as response:
+                    resp = await response.json()
+                    return f"{iconset_uuid}/{resp['name']}/{icon}"
+                
     async def handle_data(self, data: ET.Element, use_proxy: bool = True) -> None:
         """
         Handles data from a queue. In this case, that data is unprocessed COT Events.
