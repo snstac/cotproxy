@@ -28,7 +28,7 @@ def sample_xml():
 
 
 def test_read_known_craft():
-    known_craft: list = cotproxy.utils.read_known_craft()
+    known_craft: list = cotproxy.utils.read_known_craft("tests/data/known_craft.csv")
     assert isinstance(known_craft, list) == True
 
 

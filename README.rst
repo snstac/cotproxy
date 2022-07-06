@@ -57,12 +57,12 @@ Usage
 COTProxy can be configured using an INI-style config file, or using 
 Environment Variables. Configuration Parameters are as follows:
 
-* ``CPAPI_URL``: (``str``) URL of COTProxyWeb API, for example: ``http://localhost:8080/``
-* ``LISTEN_URL``: (``str``) Protocol, Local IP & Port to listen for COT Events. Default = ``udp://0.0.0.0:8087``.
-* ``KNOWN_CRAFT_FILE``: (``str``) Path to existing Known Craft file to use when seeding COTProxyWeb database. Default = ``known_craft.csv``.
-* ``PASS_ALL``: (``bool``) [optional] If True, will pass everything, Transformed or not. Default = ``False``.
-* ``AUTO_ADD``: (``bool``) [optional] If True, will automatically create Transforms and Objects for all COT Events. Default = ``False``.
-* ``SEED_FAA_REG``: (``bool``) [optional] If True, will set N-Number on seeded ICAO Hexs from FAA database. Default = ``True``.
+* ``CPAPI_URL``: URL of COTProxyWeb API, for example: ``http://localhost:8080/``
+* ``LISTEN_URL``: Protocol, Local IP & Port to listen for COT Events. Default = ``udp://0.0.0.0:8087``.
+* ``KNOWN_CRAFT_FILE``: Path to existing Known Craft file to use when seeding COTProxyWeb database. Default = ``known_craft.csv``.
+* ``PASS_ALL``: [optional] If True, will pass everything, Transformed or not. Default = ``False``.
+* ``AUTO_ADD``: [optional] If True, will automatically create Transforms and Objects for all COT Events. Default = ``False``.
+* ``SEED_FAA_REG``: [optional] If True, will set Tail/N-Number on seeded ICAO Hexs from FAA database. Default = ``True``.
 
 There are other configuration parameters, including TLS/SSL, available via `PyTAK <https://github.com/ampledata/pytak#configuration-parameters>`_.
 
