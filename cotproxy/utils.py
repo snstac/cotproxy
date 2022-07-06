@@ -86,7 +86,7 @@ class CPAPI:
         req.add_header("Content-Type", "application/json; charset=utf-8")
 
         response = urllib.request.urlopen(req, json_payload_b)
-        self._logger.info(response)
+        self._logger.debug(response)
         return response
 
     def create_cotobject(self, payload: dict) -> bool:
@@ -209,30 +209,6 @@ class CPAPI:
                 raise
         return True
 
-    def tf_exists(self, cot_uid: str) -> bool:
-        """
-        Determines if a Transform already exists for the given COT Object UID.
-
-        Parameters
-        ----------
-        cot_uid : str
-            UID of Transform to test for.
-
-        Returns
-        -------
-        `bool`
-            False if an existing Transform does not exist, True otherwise?
-        """
-        try:
-            url = "/".join([self.url, "tf", cot_uid])
-            urllib.request.urlopen(url)
-        except urllib.request.HTTPError as exc:
-            if exc.code == 404:
-                return False
-            else:
-                raise
-        return True
-
     def seed_icons(self) -> None:
         """
         Seeds Icon & IconSets from Known Craft file.
@@ -262,32 +238,31 @@ class CPAPI:
         for craft in self.known_craft:
             payload = create_cp_payload(craft)
             cot_uid = payload.get("cot_uid")
-            if not self.tf_exists(cot_uid):
+            if not self.exists("tf", cot_uid):
                 self.create_cotobject(payload)
                 self.create_transform(payload)
 
     def seed_faa_reg(self, seed_all: bool = False) -> None:
         endpoint: str = "co"
         self._logger.info("Seeding with FAA Registration database")
-        faa_main = pd.read_csv("ReleasableAircraft/MASTER.TXT")
+        faa_main = pd.read_csv("ReleasableAircraft/MASTER.TXT", dtype=str)
         reduced_main = faa_main[
             ["N-NUMBER", "TYPE REGISTRANT", "UNIQUE ID", "MODE S CODE HEX"]
         ]
-        reset_main = (
-            reduced_main.reset_index()
-        )  # make sure indexes pair with number of rows
+        # make sure indexes pair with number of rows
+        reset_main = reduced_main.reset_index() 
         for index, row in reset_main.iterrows():
             cot_uid: str = f"ICAO-{row['MODE S CODE HEX']}".strip()
-            n_number: str = f"N{row['N-NUMBER']}"
+            n_number: str = f"N{row['N-NUMBER']}".strip()
             payload: dict = {
                 "uid": cot_uid,
+                "cot_uid": cot_uid,
                 "n_number": n_number,
             }
 
-            if self.exists(endpoint, payload.get("cot_uid")):
-                self._logger.info("Updating COTObject: %s", cot_uid)
-                self.request(endpoint, payload)
-
+            if self.exists(endpoint, cot_uid):
+                self._logger.info("Updating COTObject: %s (%s)", cot_uid, n_number)
+                self.request(f"{endpoint}/{cot_uid}", payload, method="PUT")
 
 def read_known_craft(kc_file: Union[str, None] = None) -> list:
     """
