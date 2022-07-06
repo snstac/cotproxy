@@ -31,7 +31,13 @@ from collections import Counter
 from typing import Union
 from urllib.request import Request
 
-import pandas as pd
+with_pandas: bool = False
+try:
+    import pandas as pd
+
+    with_pandas = True
+except:
+    pass
 
 import cotproxy
 
@@ -41,6 +47,8 @@ __license__ = "Apache License, Version 2.0"
 
 
 class CPAPI:
+
+    """API Wrapper class for COTProxyWeb."""
 
     _logger = logging.getLogger(__name__)
     if not _logger.handlers:
@@ -243,6 +251,12 @@ class CPAPI:
                 self.create_transform(payload)
 
     def seed_faa_reg(self, seed_all: bool = False) -> None:
+        if not with_pandas:
+            self._logger.warning(
+                "Pandas not installed, install with: python3 -m pip install cotproxy[with_pandas]"
+            )
+            return
+
         endpoint: str = "co"
         self._logger.info("Seeding with FAA Registration database")
         faa_main = pd.read_csv("ReleasableAircraft/MASTER.TXT", dtype=str)
@@ -250,7 +264,7 @@ class CPAPI:
             ["N-NUMBER", "TYPE REGISTRANT", "UNIQUE ID", "MODE S CODE HEX"]
         ]
         # make sure indexes pair with number of rows
-        reset_main = reduced_main.reset_index() 
+        reset_main = reduced_main.reset_index()
         for index, row in reset_main.iterrows():
             cot_uid: str = f"ICAO-{row['MODE S CODE HEX']}".strip()
             n_number: str = f"N{row['N-NUMBER']}".strip()
@@ -263,6 +277,7 @@ class CPAPI:
             if self.exists(endpoint, cot_uid):
                 self._logger.info("Updating COTObject: %s (%s)", cot_uid, n_number)
                 self.request(f"{endpoint}/{cot_uid}", payload, method="PUT")
+
 
 def read_known_craft(kc_file: Union[str, None] = None) -> list:
     """
@@ -288,6 +303,7 @@ def read_known_craft(kc_file: Union[str, None] = None) -> list:
 
 
 def create_cp_payload(craft: dict) -> dict:
+    """Creates Payload for COTProxyWeb API."""
     craft: dict = {k.lower().strip(): v for k, v in craft.items()}
 
     cot_uid: str = f"ICAO-{craft['hex']}"
@@ -303,6 +319,7 @@ def create_cp_payload(craft: dict) -> dict:
 
 
 def _seed(config):
+    """Seeds COTProxyWeb database from existing Known Craft file."""
     kc_file: str = config.get("KNOWN_CRAFT", cotproxy.DEFAULT_KNOWN_CRAFT_FILE)
     if not os.path.exists(kc_file):
         logging.error("File does not exist: %s", kc_file)

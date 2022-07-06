@@ -32,8 +32,8 @@ def test_read_known_craft():
     assert isinstance(known_craft, list) == True
 
 
-def test_get_icons():
-    known_craft: list = cotproxy.utils.read_known_craft()
-    assert isinstance(known_craft, list) == True
-    icons = cotproxy.utils.get_icons(known_craft)
-    assert icons == True
+# def test_get_icons():
+#     known_craft: list = cotproxy.utils.read_known_craft()
+#     assert isinstance(known_craft, list) == True
+#     icons = cotproxy.utils.get_icons(known_craft)
+#     assert icons == True
