@@ -114,6 +114,12 @@ class NetWorker(pytak.Worker):
         elif "udp" in listen_url:
             await self.start_udp_listener(host, port)
 
+    async def handle_rx(self, reader, writer):
+        while 1:
+            data: bytes = await reader.readuntil("</event>".encode("UTF-8"))
+            self._logger.debug("RX: %s", data)
+            self.queue.put_nowait(data)
+
     async def start_udp_listener(self, host, port):
         """Starts a UDP Network Listener."""
         self._logger.info("%s listening on UDP %s:%s", self.__class__, host, port)
@@ -130,19 +136,13 @@ class NetWorker(pytak.Worker):
 
     async def start_tcp_listener(self, host, port):
         """Starts a TCP Network Listener."""
-        self._logger.info("%s listening on TCP %s:%s", self.__class__, host, port)
-        loop = asyncio.get_event_loop()
-        ready = asyncio.Event()
+        server = await asyncio.start_server(self.handle_rx, host, port)
 
-        # FIXME: Fix for Python 3.6 support:
-        await loop.create_server(
-            lambda: NetListener(self.queue, ready),
-            host,
-            port,
-        )
-        await ready.wait()
-        while 1:
-            await asyncio.sleep(0.01)
+        addrs = ', '.join(str(sock.getsockname()) for sock in server.sockets)
+        self._logger.info(f'Serving on %s', addrs)
+
+        async with server:
+            await server.serve_forever()
 
 
 class COTProxyWorker(pytak.QueueWorker):
