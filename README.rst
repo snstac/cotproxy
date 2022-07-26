@@ -70,7 +70,7 @@ There are other configuration parameters, including TLS/SSL, available via `PyTA
 Installing with pyenv
 =====================
 
-In Debian 10/11::
+## In Debian 10/11::
 
     $ sudo apt-get install make build-essential libssl-dev zlib1g-dev \
         libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
@@ -111,6 +111,79 @@ Seed COTProxy Transforms frome existing Known Craft file, given a Known Craft
 file named ``known_ps.csv``::
 
     $ CPAPI_URL="http://localhost:8000/" KNOWN_CRAFT=known_ps.csv cotproxy-seed
+
+
+## CentOS 7
+
+1. Update packages::
+
+    sudo yum update
+    sudo yum check-update
+
+2. Install required packages::
+
+    sudo yum groupinstall -y "Development Tools"
+    sudo yum install -y zlib zlib-devel bzip2-devel openssl-devel sqlite-devel readline-devel libffi-devel lzma-sdk-devel ncurses-devel gdbm-devel db4-devel expat-devel libpcap-devel xz-devel pcre-devel wget
+
+3. Install updated SQLite::
+
+    mkdir -p ~/src
+    cd ~/src
+    wget https://www.sqlite.org/2019/sqlite-autoconf-3290000.tar.gz
+    tar zxvf sqlite-autoconf-3290000.tar.gz
+    cd sqlite-autoconf-3290000
+    ./configure
+    make
+    sudo make install
+
+3. Install PyEnv::
+    
+    curl https://pyenv.run | bash
+
+4. Update ``~/.bash_profile``:
+
+The following chunk of code should be appended to the end of your ``~/.bash_profile``, 
+either using a text editor like ``vi``, ``vim``, ``nano`` or ``pico``. Once added, 
+reload your environment by running: ``source ~/.bash_profile``::
+
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
+    export PATH=/opt/sqlite/bin:$PATH
+    export LD_LIBRARY_PATH=/opt/sqlite/lib
+    export LD_RUN_PATH=/opt/sqlite/lib
+    export C_INCLUDE_PATH=/opt/sqlite/include
+    export CPLUS_INCLUDE_PATH=/opt/sqlite/include
+
+5. Install Python 3.9 environment::
+
+    pyenv install 3.9.13
+    pyenv shell 3.9.13
+    pyenv virtualenv cpenv
+
+6. Install cotproxy::
+
+    mkdir -p ~/src
+    cd ~/src
+    wget https://github.com/ampledata/cotproxy/archive/refs/tags/v1.0.0b1.tar.gz
+    tar -zvxf v1.0.0b1.tar.gz
+    cd cotproxy-1.0.0b1/
+    python3 setup.py install
+
+7. Install & Initialize cotproxyweb::
+
+    mkdir -p ~/src
+    cd ~/src
+    git clone https://github.com/ampledata/cotproxyweb.git
+    cd cotproxyweb/
+    python3 -m pip install -r requirements.txt
+    python3 manage.py migrate
+    python3 manage.py createsuperuser \
+    --username admin --email admin@undef.net
+    python3 manage.py runserver 0:8000
+
+8. From here follow the standard configuration options for ``cotproxy``.
 
 
 Source
