@@ -120,7 +120,9 @@ CentOS 7
 2. Install required packages::
 
     sudo yum groupinstall -y "Development Tools"
-    sudo yum install -y zlib zlib-devel bzip2-devel openssl-devel sqlite-devel readline-devel libffi-devel lzma-sdk-devel ncurses-devel gdbm-devel db4-devel expat-devel libpcap-devel xz-devel pcre-devel wget
+    sudo yum install -y zlib zlib-devel bzip2-devel openssl-devel sqlite-devel \
+        readline-devel libffi-devel lzma-sdk-devel ncurses-devel gdbm-devel \
+        db4-devel expat-devel libpcap-devel xz-devel pcre-devel wget
 
 3. Install updated SQLite::
 
@@ -163,9 +165,9 @@ reload your environment by running: ``source ~/.bash_profile``::
 
     mkdir -p ~/src
     cd ~/src
-    wget https://github.com/ampledata/cotproxy/archive/refs/tags/v1.0.0b1.tar.gz
-    tar -zvxf v1.0.0b1.tar.gz
-    cd cotproxy-1.0.0b1/
+    wget https://github.com/ampledata/cotproxy/archive/refs/tags/v1.0.0b2.tar.gz
+    tar -zvxf v1.0.0b2.tar.gz
+    cd cotproxy-1.0.0b2/
     python3 setup.py install
 
 7. Install & Initialize cotproxyweb::
@@ -180,7 +182,7 @@ reload your environment by running: ``source ~/.bash_profile``::
     --username admin --email admin@undef.net
     python3 manage.py runserver 0:8000
 
-8. From here follow the standard configuration options for ``cotproxy``.
+8. From here follow the Usage for ``cotproxy``.
 
 
 Usage
