@@ -1,5 +1,9 @@
-cotproxy - Cursor On Target Transformation Proxy.
-*************************************************
+********
+COTProxy
+********
+
+Cursor On Target Transformation Proxy
+#####################################
 
 COTProxy is an inline Cursor On Target (COT) transformation proxy. Given a 
 matching UID & Transform, COT Event characteristics can be changed, including 
@@ -31,8 +35,9 @@ efforts is greatly appreciated.
 Installation
 ============
 
-COTProxy is available as a Debian ``.deb`` package. This is the preferred way to 
-install COTProxy as it will pull in all of the required OS-level dependencies::
+Debian, Ubuntu, RaspberryOS
+---------------------------
+COTProxy is available as a ``.deb`` package::
 
     $ sudo apt update
     $ wget https://github.com/ampledata/pytak/releases/latest/download/python3-pytak_latest_all.deb
@@ -40,37 +45,27 @@ install COTProxy as it will pull in all of the required OS-level dependencies::
     $ wget https://github.com/ampledata/cotproxy/releases/latest/download/python3-cotproxy_latest_all.deb
     $ sudo apt install -f ./python3-cotproxy_latest_all.deb
 
-Install from the Python Package Index (PyPI) [Advanced Users]::
+CentOS, RedHat
+--------------
+Install from the Python Package Index (PyPI)::
 
     $ pip install cotproxy
 
-Install from this source tree [Developers]::
+Developers
+----------
+Install from GitHub source::
 
     $ git clone https://github.com/ampledata/cotproxy.git
     $ cd cotproxy/
     $ python setup.py install
 
 
-Usage
-=====
+With PyEnv
+----------
 
-COTProxy can be configured using an INI-style config file, or using 
-Environment Variables. Configuration Parameters are as follows:
-
-* ``CPAPI_URL``: URL of COTProxyWeb API, for example: ``http://localhost:8080/``
-* ``LISTEN_URL``: Protocol, Local IP & Port to listen for COT Events. Default = ``udp://0.0.0.0:8087``.
-* ``KNOWN_CRAFT_FILE``: Path to existing Known Craft file to use when seeding COTProxyWeb database. Default = ``known_craft.csv``.
-* ``PASS_ALL``: [optional] If True, will pass everything, Transformed or not. Default = ``False``.
-* ``AUTO_ADD``: [optional] If True, will automatically create Transforms and Objects for all COT Events. Default = ``False``.
-* ``SEED_FAA_REG``: [optional] If True, will set Tail/N-Number on seeded ICAO Hexs from FAA database. Default = ``True``.
-
-There are other configuration parameters, including TLS/SSL, available via `PyTAK <https://github.com/ampledata/pytak#configuration-parameters>`_.
-
-
-Installing with pyenv
-=====================
-
-## In Debian 10/11::
+Debian
+^^^^^^
+1. Install required packages::
 
     $ sudo apt-get install make build-essential libssl-dev zlib1g-dev \
         libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
@@ -78,7 +73,8 @@ Installing with pyenv
         libffi-dev liblzma-dev git
     $ curl https://pyenv.run | bash
 
-Add the following to your ~/.bashrc and restart your shell::
+
+2. Add the following to your ~/.bashrc and restart your shell::
 
     export PYENV_ROOT="$HOME/.pyenv"
     command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
@@ -113,7 +109,8 @@ file named ``known_ps.csv``::
     $ CPAPI_URL="http://localhost:8000/" KNOWN_CRAFT=known_ps.csv cotproxy-seed
 
 
-## CentOS 7
+CentOS 7
+^^^^^^^^
 
 1. Update packages::
 
@@ -184,6 +181,22 @@ reload your environment by running: ``source ~/.bash_profile``::
     python3 manage.py runserver 0:8000
 
 8. From here follow the standard configuration options for ``cotproxy``.
+
+
+Usage
+=====
+
+COTProxy can be configured using an INI-style config file, or using 
+Environment Variables. Configuration Parameters are as follows:
+
+* ``CPAPI_URL``: URL of COTProxyWeb API, for example: ``http://localhost:8080/``
+* ``LISTEN_URL``: Protocol, Local IP & Port to listen for COT Events. Default = ``udp://0.0.0.0:8087``.
+* ``KNOWN_CRAFT_FILE``: Path to existing Known Craft file to use when seeding COTProxyWeb database. Default = ``known_craft.csv``.
+* ``PASS_ALL``: [optional] If True, will pass everything, Transformed or not. Default = ``False``.
+* ``AUTO_ADD``: [optional] If True, will automatically create Transforms and Objects for all COT Events. Default = ``False``.
+* ``SEED_FAA_REG``: [optional] If True, will set Tail/N-Number on seeded ICAO Hexs from FAA database. Default = ``True``.
+
+There are other configuration parameters, including TLS/SSL, available via `PyTAK <https://github.com/ampledata/pytak#configuration-parameters>`_.
 
 
 Source
