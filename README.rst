@@ -16,6 +16,7 @@ Concept:
    :alt: COTProxy concept diagram.
    :target: https://raw.githubusercontent.com/ampledata/cotproxy/main/docs/cotproxy-concept.png
 
+A video walkthrough is available on `YouTube <https://www.youtube.com/watch?v=ltVxh1uQ_EQ>`_.
 
 Support Development
 ===================
