@@ -5,9 +5,8 @@ COTProxy
 Cursor On Target Transformation Proxy
 #####################################
 
-COTProxy is an inline Cursor On Target (CoT) transformation proxy for TAK Products. 
-CoT comes into COTProxy, parameters like ``type``, ``icon``, ``callsign``, et al.
-modified and forwarded to other TAK Products.
+COTProxy is an in-line Cursor On Target (CoT) transformation proxy for TAK Products.
+CoT can be modified as it travels from one TAK Product to another.
 
 `YouTube: Getting started with COTProxy <https://www.youtube.com/watch?v=ltVxh1uQ_EQ>`_.
 
