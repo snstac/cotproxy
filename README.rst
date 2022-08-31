@@ -117,7 +117,12 @@ Debian, Ubuntu, RaspberryOS, Raspbian
     $ sudo systemctl start cotproxy
 
 4. You can view cotproxy logs with: ``$ sudo journalctl -xef``
-  
+
+
+CentOS
+------
+
+TK
 
 Installation
 ============
