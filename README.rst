@@ -45,7 +45,7 @@ Usage
 COTProxy can be configured using an INI-style config file, or using 
 Environment Variables. Configuration Parameters are as follows:
 
-* ``CPAPI_URL``: URL of COTProxyWeb API, for example: ``http://localhost:8080/``
+* ``CPAPI_URL``: URL of COTProxyWeb API. Default = ``http://localhost:10415/``
 * ``LISTEN_URL``: Protocol, Local IP & Port to listen for COT Events. Default = ``udp://0.0.0.0:8087``.
 * ``KNOWN_CRAFT_FILE``: Path to existing Known Craft file to use when seeding COTProxyWeb database. Default = ``known_craft.csv``.
 * ``PASS_ALL``: [optional] If True, will pass everything, Transformed or not. Default = ``False``.

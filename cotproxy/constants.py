@@ -44,7 +44,7 @@ else:
 DEFAULT_PASS_ALL: bool = False
 DEFAULT_AUTO_ADD: bool = False
 DEFAULT_SLEEP_INTERVAL: int = 20
-DEFAULT_CPAPI_URL: str = "http://localhost:8080/"
+DEFAULT_CPAPI_URL: str = "http://localhost:10415/"
 DEFAULT_LISTEN_URL: str = "udp://0.0.0.0:8087"
 DEFAULT_KNOWN_CRAFT_FILE: str = "known_craft.csv"
 DEFAULT_SEED_FAA_REG: bool = True
