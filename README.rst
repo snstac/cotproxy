@@ -106,7 +106,7 @@ Debian, Ubuntu, RaspberryOS, Raspbian
 
 (You can create ``cotproxy.service`` using Nano: ``$ sudo nano /etc/systemd/system/cotproxy.service``)
 
-2. Create the ``/etc/config.ini`` file and add an appropriate configuration, see `Usage <#Usage>`_ section of the README::
+2. Create the ``/etc/config.ini`` file and add an appropriate configuration, see `Configuration <#Configuration>`_ section of the README::
     
     $ sudo nano /etc/config.ini
 
