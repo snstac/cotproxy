@@ -39,8 +39,8 @@ efforts is greatly appreciated.
     :alt: Support Development: Buy me a coffee!
 
 
-Usage
-=====
+Configuration
+=============
 
 COTProxy can be configured using an INI-style config file, or using 
 Environment Variables. Configuration Parameters are as follows:
@@ -106,7 +106,7 @@ Debian, Ubuntu, RaspberryOS, Raspbian
 
 (You can create ``cotproxy.service`` using Nano: ``$ sudo nano /etc/systemd/system/cotproxy.service``)
 
-2. Create the ``/etc/config.ini`` file and add an appropriate configuration, see **Usage** section of the README::
+2. Create the ``/etc/config.ini`` file and add an appropriate configuration, see `Usage <#Usage>`_ section of the README::
     
     $ sudo nano /etc/config.ini
 
@@ -123,6 +123,7 @@ CentOS
 ------
 
 TK
+
 
 Installation
 ============
@@ -155,8 +156,8 @@ Install from GitHub source::
 With PyEnv
 ----------
 
-Debian
-^^^^^^
+Debian (pyenv)
+^^^^^^^^^^^^^^
 1. Install required packages::
 
     $ sudo apt-get install make build-essential libssl-dev zlib1g-dev \
@@ -201,8 +202,8 @@ file named ``known_ps.csv``::
     $ CPAPI_URL="http://localhost:8000/" KNOWN_CRAFT=known_ps.csv cotproxy-seed
 
 
-CentOS 7
-^^^^^^^^
+CentOS 7 (pyenv)
+^^^^^^^^^^^^^^^^
 
 1. Update packages::
 
@@ -274,7 +275,7 @@ reload your environment by running: ``source ~/.bash_profile``::
     --username admin --email admin@undef.net
     python3 manage.py runserver 0:8000
 
-8. From here follow the Usage for ``cotproxy``.
+8. From here follow the `Running <#Running>`_ section of the README.
 
 
 Source
