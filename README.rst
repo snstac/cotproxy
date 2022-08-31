@@ -77,17 +77,19 @@ Debian, Ubuntu, RaspberryOS, Raspbian
     [Install]
     WantedBy=multi-user.target
 
+(You can create ``cotproxy.service`` using Nano: ``$ sudo nano /etc/systemd/system/cotproxy.service``)
+
 2. Create the ``/etc/config.ini`` file and add an appropriate configuration, see **Usage** section of the README::
     
-    sudo nano /etc/config.ini
+    $ sudo nano /etc/config.ini
 
 3. Enable cotproxy systemd service::
     
-    sudo systemctl daemon-reload
-    sudo systemctl enable cotproxy
-    sudo systemctl start cotproxy
+    $ sudo systemctl daemon-reload
+    $ sudo systemctl enable cotproxy
+    $ sudo systemctl start cotproxy
 
-4. You can view cotproxy logs with: ``sudo journalctl -xef``
+4. You can view cotproxy logs with: ``$ sudo journalctl -xef``
   
 
 Installation
