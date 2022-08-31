@@ -55,6 +55,33 @@ Environment Variables. Configuration Parameters are as follows:
 TLS & Other configuration options, see: `PyTAK <https://github.com/ampledata/pytak#configuration-parameters>`_.
 
 
+Example Config
+--------------
+
+Example 1:
+
+Send modified CoT to a TAK Server using TLS::
+
+    [cotproxy]
+    ; Listen for CoT at TCP Port 8087 on all network interfaces:
+    LISTEN_URL=tcp://0.0.0.0:8087
+    ; Send modified CoT to our TAK Server using TLS:
+    COT_URL=tls://takserver.example.com:8089
+    ; TLS Cert & Key
+    PYTAK_TLS_CLIENT_CERT=/etc/cotproxy.cert.pem
+    PYTAK_TLS_CLIENT_KEY=/etc/cotproxy.key.pem
+
+Example 2:
+
+Send modified CoT to ATAK Mesh Multicast::
+    
+    [cotproxy]
+    ; Listen for CoT at TCP Port 8087 on all network interfaces:
+    LISTEN_URL=tcp://0.0.0.0:8087
+    ; ATAK Multicast Group & Port:
+    COT_URL=udp://239.2.3.1:6969
+
+
 Running
 =======
 
