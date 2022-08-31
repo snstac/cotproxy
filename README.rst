@@ -5,8 +5,16 @@ COTProxy
 Cursor On Target Transformation Proxy
 #####################################
 
-COTProxy is an inline Cursor On Target (COT) transformation proxy. Given a 
-matching UID & Transform, COT Event characteristics can be changed, including 
+COTProxy is an inline Cursor On Target (CoT) transformation proxy for TAK Products. 
+CoT comes into COTProxy, parameters like ``type``, ``icon``, ``callsign``, et al.
+modified and forwarded to other TAK Products.
+
+`YouTube: Getting started with COTProxy <https://www.youtube.com/watch?v=ltVxh1uQ_EQ>`_.
+
+
+How does it work?
+=================
+Given a matching UID & Transform, CoT Event characteristics can be changed, including 
 Callsign, Type, Icon, Video, et al. COTProxy's transform configurations are 
 managed via the COTProxyWeb front-end.
 
@@ -16,7 +24,6 @@ Concept:
    :alt: COTProxy concept diagram.
    :target: https://raw.githubusercontent.com/ampledata/cotproxy/main/docs/cotproxy-concept.png
 
-A video walkthrough is available on `YouTube <https://www.youtube.com/watch?v=ltVxh1uQ_EQ>`_.
 
 Support Development
 ===================
@@ -33,11 +40,62 @@ efforts is greatly appreciated.
     :alt: Support Development: Buy me a coffee!
 
 
+Usage
+=====
+
+COTProxy can be configured using an INI-style config file, or using 
+Environment Variables. Configuration Parameters are as follows:
+
+* ``CPAPI_URL``: URL of COTProxyWeb API, for example: ``http://localhost:8080/``
+* ``LISTEN_URL``: Protocol, Local IP & Port to listen for COT Events. Default = ``udp://0.0.0.0:8087``.
+* ``KNOWN_CRAFT_FILE``: Path to existing Known Craft file to use when seeding COTProxyWeb database. Default = ``known_craft.csv``.
+* ``PASS_ALL``: [optional] If True, will pass everything, Transformed or not. Default = ``False``.
+* ``AUTO_ADD``: [optional] If True, will automatically create Transforms and Objects for all COT Events. Default = ``False``.
+* ``SEED_FAA_REG``: [optional] If True, will set Tail/N-Number on seeded ICAO Hexs from FAA database. Default = ``True``.
+
+TLS & Other configuration options, see: `PyTAK <https://github.com/ampledata/pytak#configuration-parameters>`_.
+
+
+Running
+=======
+
+COTProxy should be started as a background sevice (daemon). Most modern systems 
+use systemd.
+
+
+Debian, Ubuntu, RaspberryOS, Raspbian
+-------------------------------------
+
+1. Copy the following code block to ``/etc/systemd/system/cotproxy.service``::
+
+    [cotproxy]
+    Description=COTProxy Service
+    After=multi-user.target
+    [Service]
+    ExecStart=/usr/bin/cotproxy -c /etc/cotproxy.ini
+    Restart=always
+    RestartSec=5
+    [Install]
+    WantedBy=multi-user.target
+
+2. Create the ``/etc/config.ini`` file and add an appropriate configuration, see **Usage** section of the README::
+    
+    sudo nano /etc/config.ini
+
+3. Enable cotproxy systemd service::
+    
+    sudo systemctl daemon-reload
+    sudo systemctl enable cotproxy
+    sudo systemctl start cotproxy
+
+4. You can view cotproxy logs with: ``sudo journalctl -xef``
+  
+
 Installation
 ============
 
-Debian, Ubuntu, RaspberryOS
----------------------------
+Debian, Ubuntu, RaspberryOS, Raspbian
+-------------------------------------
 COTProxy is available as a ``.deb`` package::
 
     $ sudo apt update
@@ -50,7 +108,7 @@ CentOS, RedHat
 --------------
 Install from the Python Package Index (PyPI)::
 
-    $ pip install cotproxy
+    $ python3 -m pip install cotproxy
 
 Developers
 ----------
@@ -58,7 +116,7 @@ Install from GitHub source::
 
     $ git clone https://github.com/ampledata/cotproxy.git
     $ cd cotproxy/
-    $ python setup.py install
+    $ python3 setup.py install
 
 
 With PyEnv
@@ -184,22 +242,6 @@ reload your environment by running: ``source ~/.bash_profile``::
     python3 manage.py runserver 0:8000
 
 8. From here follow the Usage for ``cotproxy``.
-
-
-Usage
-=====
-
-COTProxy can be configured using an INI-style config file, or using 
-Environment Variables. Configuration Parameters are as follows:
-
-* ``CPAPI_URL``: URL of COTProxyWeb API, for example: ``http://localhost:8080/``
-* ``LISTEN_URL``: Protocol, Local IP & Port to listen for COT Events. Default = ``udp://0.0.0.0:8087``.
-* ``KNOWN_CRAFT_FILE``: Path to existing Known Craft file to use when seeding COTProxyWeb database. Default = ``known_craft.csv``.
-* ``PASS_ALL``: [optional] If True, will pass everything, Transformed or not. Default = ``False``.
-* ``AUTO_ADD``: [optional] If True, will automatically create Transforms and Objects for all COT Events. Default = ``False``.
-* ``SEED_FAA_REG``: [optional] If True, will set Tail/N-Number on seeded ICAO Hexs from FAA database. Default = ``True``.
-
-There are other configuration parameters, including TLS/SSL, available via `PyTAK <https://github.com/ampledata/pytak#configuration-parameters>`_.
 
 
 Source
