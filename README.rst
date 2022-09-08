@@ -2,15 +2,15 @@
 COTProxy
 ********
 
+.. image:: https://raw.githubusercontent.com/ampledata/cotproxy/main/docs/youtube.png
+    :alt: YouTube: Getting started with COTProxy
+    :target: https://www.youtube.com/watch?v=ltVxh1uQ_EQ
+
 Cursor on Target Transformation Proxy
 #####################################
 
 COTProxy is an in-line Cursor-on-Target (CoT) transformation proxy for `TAK Products <https://tak.gov>`_.
 CoT can be modified as it travels from one TAK Product to another over a network.
-
-.. image:: https://raw.githubusercontent.com/ampledata/cotproxy/main/docs/youtube.png
-    :alt: YouTube: Getting started with COTProxy
-    :target: https://www.youtube.com/watch?v=ltVxh1uQ_EQ
 
 How does it work?
 =================
