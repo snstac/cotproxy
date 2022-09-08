@@ -1,0 +1,11 @@
+  [Unit]
+  Description=COTProxy Service
+  After=multi-user.target
+
+  [Service]
+  ExecStart=/usr/bin/cotproxy -c /etc/cotproxy.ini
+  Restart=always
+  RestartSec=5
+
+  [Install]
+  WantedBy=multi-user.target

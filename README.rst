@@ -2,11 +2,11 @@
 COTProxy
 ********
 
-Cursor On Target Transformation Proxy
+Cursor on Target Transformation Proxy
 #####################################
 
-COTProxy is an in-line Cursor On Target (CoT) transformation proxy for TAK Products.
-CoT can be modified as it travels from one TAK Product to another.
+COTProxy is an in-line Cursor-on-Target (CoT) transformation proxy for `TAK Products <https://tak.gov>`_.
+CoT can be modified as it travels from one TAK Product to another over a network.
 
 `YouTube: Getting started with COTProxy <https://www.youtube.com/watch?v=ltVxh1uQ_EQ>`_.
 
@@ -15,24 +15,23 @@ How does it work?
 =================
 Given a matching UID & Transform, CoT Event characteristics can be changed, including 
 Callsign, Type, Icon, Video, et al. COTProxy's transform configurations are 
-managed via the COTProxyWeb front-end.
+managed via the `COTProxyWeb <https://github.com/ampledata/cotproxyweb>` front-end, installed separately.
 
-Concept:
+Concept of Operations CONOPS:
 
 .. image:: https://raw.githubusercontent.com/ampledata/cotproxy/main/docs/cotproxy-concept.png
-   :alt: COTProxy concept diagram.
+   :alt: COTProxy Concept of Operations CONOPS
    :target: https://raw.githubusercontent.com/ampledata/cotproxy/main/docs/cotproxy-concept.png
 
 
-Support Development
-===================
+Support This Project
+====================
 
-**Tech Support**: Email support@undef.net or Signal/WhatsApp: +1-310-621-9598
+**Help**: Email takhelp@undef.net or Signal/WhatsApp: +1-310-621-9598
 
-This tool has been developed for the Disaster Response, Public Safety and
-Frontline Healthcare community. This software is currently provided at no-cost
-to users. Any contribution you can make to further this project's development
-efforts is greatly appreciated.
+This project has been developed for the Disaster Response, Public Safety and
+Frontline Healthcare community. All contributions further project development and 
+ensure ongoing support.
 
 .. image:: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
     :target: https://www.buymeacoffee.com/ampledata
@@ -47,9 +46,12 @@ Environment Variables. Configuration Parameters are as follows:
 
 * ``CPAPI_URL``: URL of COTProxyWeb API. Default = ``http://localhost:10415/``
 * ``LISTEN_URL``: Protocol, Local IP & Port to listen for COT Events. Default = ``udp://0.0.0.0:8087``.
-* ``KNOWN_CRAFT_FILE``: Path to existing Known Craft file to use when seeding COTProxyWeb database. Default = ``known_craft.csv``.
 * ``PASS_ALL``: [optional] If True, will pass everything, Transformed or not. Default = ``False``.
 * ``AUTO_ADD``: [optional] If True, will automatically create Transforms and Objects for all COT Events. Default = ``False``.
+
+Optional special parameters for importing legacy ``known_craft.csv`` files:
+
+* ``KNOWN_CRAFT_FILE``: [optional] Path to existing Known Craft file to use when seeding COTProxyWeb database. Default = ``known_craft.csv``.
 * ``SEED_FAA_REG``: [optional] If True, will set Tail/N-Number on seeded ICAO Hexs from FAA database. Default = ``True``.
 
 TLS & Other configuration options, see: `PyTAK <https://github.com/ampledata/pytak#configuration-parameters>`_.
@@ -58,26 +60,29 @@ TLS & Other configuration options, see: `PyTAK <https://github.com/ampledata/pyt
 Example Config
 --------------
 
-Example 1:
-
 Send modified CoT to a TAK Server using TLS::
 
     [cotproxy]
+    ; ^-- [cotproxy] must always the the first line of config file.
+
     ; Listen for CoT at TCP Port 8087 on all network interfaces:
     LISTEN_URL=tcp://0.0.0.0:8087
+
     ; Send modified CoT to our TAK Server using TLS:
     COT_URL=tls://takserver.example.com:8089
+
     ; TLS Cert & Key
     PYTAK_TLS_CLIENT_CERT=/etc/cotproxy.cert.pem
     PYTAK_TLS_CLIENT_KEY=/etc/cotproxy.key.pem
 
-Example 2:
-
 Send modified CoT to ATAK Mesh Multicast::
     
     [cotproxy]
+    ; ^-- [cotproxy] must always the the first line of config file.
+
     ; Listen for CoT at TCP Port 8087 on all network interfaces:
     LISTEN_URL=tcp://0.0.0.0:8087
+
     ; ATAK Multicast Group & Port:
     COT_URL=udp://239.2.3.1:6969
 
@@ -85,28 +90,21 @@ Send modified CoT to ATAK Mesh Multicast::
 Running
 =======
 
-COTProxy should be started as a background sevice (daemon). Most modern systems 
-use systemd.
+COTProxy should be started as a background sevice ('run forever', daemon, etc). 
+Most modern Linux-based operating systems use the `systemd <https://systemd.io/>`_ 
+System and Service Manager.
 
+CentOS, Debian, Ubuntu, RaspberryOS, Raspbian
+---------------------------------------------
 
-Debian, Ubuntu, RaspberryOS, Raspbian
--------------------------------------
+These instructions will create, enable and start a service on Linux.
 
-1. Copy the following code block to ``/etc/systemd/system/cotproxy.service``::
+1. Download the example cotproxy systemd service definition::
 
-    [cotproxy]
-    Description=COTProxy Service
-    After=multi-user.target
-    [Service]
-    ExecStart=/usr/bin/cotproxy -c /etc/cotproxy.ini
-    Restart=always
-    RestartSec=5
-    [Install]
-    WantedBy=multi-user.target
+    $ sudo wget --output-document=/etc/systemd/system/cotproxy.service https://raw.githubusercontent.com/ampledata/cotproxy/main/cotproxy.service
 
-(You can create ``cotproxy.service`` using Nano: ``$ sudo nano /etc/systemd/system/cotproxy.service``)
-
-2. Create the ``/etc/config.ini`` file and add an appropriate configuration, see `Configuration <#Configuration>`_ section of the README::
+2. Create the ``/etc/config.ini`` file and add an appropriate configuration, see `Configuration <#Configuration>`_ section 
+    of the README for config examples::
     
     $ sudo nano /etc/config.ini
 
@@ -117,12 +115,6 @@ Debian, Ubuntu, RaspberryOS, Raspbian
     $ sudo systemctl start cotproxy
 
 4. You can view cotproxy logs with: ``$ sudo journalctl -xef``
-
-
-CentOS
-------
-
-TK
 
 
 Installation
@@ -153,10 +145,13 @@ Install from GitHub source::
     $ python3 setup.py install
 
 
-With PyEnv
-----------
+Install with PyEnv
+------------------
+PyEnv is an alternative installation method that bypasses the system built-in Python environment on Linux & MacOS. PyEnv 
+works by installing its own Python binary & libraries, and keeping installed modules isolated from system modules. This 
+is the authors preferred method of installation.
 
-Debian (pyenv)
+PyEnv - Debian 
 ^^^^^^^^^^^^^^
 1. Install required packages::
 
@@ -202,7 +197,7 @@ file named ``known_ps.csv``::
     $ CPAPI_URL="http://localhost:8000/" KNOWN_CRAFT=known_ps.csv cotproxy-seed
 
 
-CentOS 7 (pyenv)
+PyEnv - CentOS 7
 ^^^^^^^^^^^^^^^^
 
 1. Update packages::
