@@ -10,7 +10,7 @@ CoT can be modified as it travels from one TAK Product to another over a network
 
 .. image:: https://raw.githubusercontent.com/ampledata/cotproxy/main/docs/youtube.png
     :alt: YouTube: Getting started with COTProxy
-    :target: https://www.youtube.com/ltVxh1uQ_EQ
+    :target: https://www.youtube.com/watch?v=ltVxh1uQ_EQ
 
 How does it work?
 =================
