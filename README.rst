@@ -16,7 +16,7 @@ How does it work?
 =================
 Given a matching UID & Transform, CoT Event characteristics can be changed, including 
 Callsign, Type, Icon, Video, et al. COTProxy's transform configurations are 
-managed via the `COTProxyWeb <https://github.com/ampledata/cotproxyweb>` front-end, installed separately.
+managed via the `COTProxyWeb <https://github.com/ampledata/cotproxyweb>`_ front-end, installed separately.
 
 Concept of Operations CONOPS:
 
@@ -46,22 +46,25 @@ COTProxy can be configured using an INI-style config file, or using
 Environment Variables. Configuration Parameters are as follows:
 
 * ``CPAPI_URL``: URL of COTProxyWeb API. Default = ``http://localhost:10415/``
-* ``LISTEN_URL``: Protocol, Local IP & Port to listen for COT Events. Default = ``udp://0.0.0.0:8087``.
-* ``PASS_ALL``: [optional] If True, will pass everything, Transformed or not. Default = ``False``.
-* ``AUTO_ADD``: [optional] If True, will automatically create Transforms and Objects for all COT Events. Default = ``False``.
+* ``LISTEN_URL``: Protocol, Local IP & Port to listen for CoT Events. Default = ``udp://0.0.0.0:8087``.
+* ``PASS_ALL``: If True, will pass everything, Transformed or not. Default = ``False``.
+* ``AUTO_ADD``: If True, will automatically create Transforms and Objects for all COT Events. Default = ``False``.
 
 Optional special parameters for importing legacy ``known_craft.csv`` files:
 
 * ``KNOWN_CRAFT_FILE``: [optional] Path to existing Known Craft file to use when seeding COTProxyWeb database. Default = ``known_craft.csv``.
 * ``SEED_FAA_REG``: [optional] If True, will set Tail/N-Number on seeded ICAO Hexs from FAA database. Default = ``True``.
 
-TLS & Other configuration options, see: `PyTAK <https://github.com/ampledata/pytak#configuration-parameters>`_.
+TLS & other configuration options, see: `PyTAK <https://github.com/ampledata/pytak#configuration-parameters>`_.
 
 
 Example Config
 --------------
 
-Send modified CoT to a TAK Server using TLS::
+To use any of these example configurations, save the indented code block to the file ``/etc/config.ini`` and start 
+COTProxy with ``cotproxy -c /etc/config.ini``.
+
+Example - Send modified CoT to a TAK Server using TLS::
 
     [cotproxy]
     ; ^-- [cotproxy] must always the the first line of config file.
@@ -76,7 +79,7 @@ Send modified CoT to a TAK Server using TLS::
     PYTAK_TLS_CLIENT_CERT=/etc/cotproxy.cert.pem
     PYTAK_TLS_CLIENT_KEY=/etc/cotproxy.key.pem
 
-Send modified CoT to ATAK Mesh Multicast::
+Example - Send modified CoT to ATAK Mesh Multicast::
     
     [cotproxy]
     ; ^-- [cotproxy] must always the the first line of config file.
@@ -104,8 +107,8 @@ These instructions will create, enable and start a service on Linux.
 
     $ sudo wget --output-document=/etc/systemd/system/cotproxy.service https://raw.githubusercontent.com/ampledata/cotproxy/main/cotproxy.service
 
-2. Create the ``/etc/config.ini`` file and add an appropriate configuration, see `Configuration <#Configuration>`_ section 
-    of the README for config examples::
+2. Create the ``/etc/config.ini`` file and add an appropriate configuration, see `Configuration <#Configuration>`_ 
+section of the README for config examples::
     
     $ sudo nano /etc/config.ini
 
