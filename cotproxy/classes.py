@@ -94,7 +94,7 @@ class NetListener(asyncio.Protocol):
                     self.queue.put_nowait(event)
         except Exception as exc:
             self._logger.debug(exc)
-            
+
 
 class NetWorker(pytak.Worker):
 
@@ -146,8 +146,8 @@ class NetWorker(pytak.Worker):
         else:
             server = await asyncio.start_server(self.handle_rx, host, port)
 
-            addrs = ', '.join(str(sock.getsockname()) for sock in server.sockets)
-            self._logger.info(f'Serving on %s', addrs)
+            addrs = ", ".join(str(sock.getsockname()) for sock in server.sockets)
+            self._logger.info(f"Serving on %s", addrs)
 
             async with server:
                 await server.serve_forever()
@@ -160,7 +160,6 @@ class COTProxyWorker(pytak.QueueWorker):
     """
 
     def __init__(self, clitool: pytak.CLITool, config, tf_queue: asyncio.Queue) -> None:
-    
         queue: asyncio.Queue = clitool.queues[config.name].get("tx_queue")
         super().__init__(queue, config)
         self.tf_queue = tf_queue
@@ -188,12 +187,12 @@ class COTProxyWorker(pytak.QueueWorker):
     async def read_queue(self, use_proxy: bool = True) -> None:
         """Reads COT from ingress queue and hands off to COT handler."""
         data_dict = await self.tf_queue.get()
-        tf_msg: ET.Element = data_dict['event']
-        tf_msg = ET.fromstring(tf_msg.decode('utf-8'))
-        data_dict['event'] = tf_msg
+        tf_msg: ET.Element = data_dict["event"]
+        tf_msg = ET.fromstring(tf_msg.decode("utf-8"))
+        data_dict["event"] = tf_msg
         self._logger.debug('Got tf_msg="%s"', ET.tostring(tf_msg))
-        uid : str = tf_msg.attrib.get("uid")
-        stale : str = tf_msg.attrib.get("stale")
+        uid: str = tf_msg.attrib.get("uid")
+        stale: str = tf_msg.attrib.get("stale")
         brain = self.seen_cots.get(uid, False)
         if brain == stale:
             return
@@ -249,16 +248,18 @@ class COTProxyWorker(pytak.QueueWorker):
         transform : `dict`
             Data struct of transforms to apply to event.
         """
-        event: ET.Element = data['event']
+        event: ET.Element = data["event"]
         if transform.get("active", False):
             self._logger.info("%s Transforming", event.attrib.get("uid"))
             icon = transform.get("icon")
             if icon:
                 transform["icon"] = await self.get_icon(icon)
-            event: ET.Element = cotproxy.transform_cot(event, transform, self.clitool, routing)
+            event: ET.Element = cotproxy.transform_cot(
+                event, transform, self.clitool, routing
+            )
         data = cotproxy.route_cot(data, routing, self.clitool)
         if isinstance(event, ET.Element):
-            await self.put_queue(ET.tostring(event), data['tx'])
+            await self.put_queue(ET.tostring(event), data["tx"])
         else:
             self._logger.warning("Incoming event was not ET.Element")
 
@@ -272,7 +273,7 @@ class COTProxyWorker(pytak.QueueWorker):
                 async with self.session.get(endpoint) as response:
                     resp = await response.json()
                     return f"{iconset_uuid}/{resp['name']}/{icon}"
-                
+
     async def handle_data(self, data: dict, use_proxy: bool = True) -> None:
         """
         Handles data from a queue. In this case, that data is unprocessed COT Events.
@@ -289,7 +290,7 @@ class COTProxyWorker(pytak.QueueWorker):
         use_proxy : `bool`
             Determines if we should even query the COTProxy API.
         """
-        uid: str = data['event'].attrib.get("uid")
+        uid: str = data["event"].attrib.get("uid")
         if not uid:
             self._logger.debug("Event had no UID, returning.")
             return
@@ -300,12 +301,14 @@ class COTProxyWorker(pytak.QueueWorker):
             async with self.session.get(tf_url) as response:
                 # If a Transform for this COT UID doesn't exist:
                 if response.status == 404:
-                    await self.create_co_and_tf(data['event'])
+                    await self.create_co_and_tf(data["event"])
                 # If a Transform for this COT UID does exist, try to Transform:
                 elif response.status == 200:
                     async with self.session.get(rs_url) as routes_response:
-                        await self.transform_event(data, await response.json(), await routes_response.json())
-        await self.pass_all(data['event'])
+                        await self.transform_event(
+                            data, await response.json(), await routes_response.json()
+                        )
+        await self.pass_all(data["event"])
 
     async def pass_all(self, event: ET.ElementTree) -> None:
         """Passes non-transformed COT Events, if self.pass_all is True."""

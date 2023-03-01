@@ -34,9 +34,7 @@ __copyright__ = "Copyright 2022 Greg Albrecht"
 __license__ = "Apache License, Version 2.0"
 
 
-def create_tasks(
-    config: SectionProxy, clitool: pytak.CLITool
-) -> Set[pytak.Worker,]:
+def create_tasks(config: SectionProxy, clitool: pytak.CLITool) -> Set[pytak.Worker,]:
     """
     Creates specific coroutine task set for this application.
 
@@ -59,7 +57,7 @@ def create_tasks(
         for i in clitool.full_config.sections():
             cp_api.create_queue(clitool.full_config[i])
             workers_set.add(cotproxy.NetWorker(tf_queue, clitool.full_config[i]))
-    else:    
+    else:
         workers_set.append(cotproxy.NetWorker(tf_queue, config))
     workers_set.add(cotproxy.COTProxyWorker(clitool, config, tf_queue))
     return workers_set
@@ -82,6 +80,7 @@ def get_callsign(msg) -> str:
         )
     except:
         return None
+
 
 def transform_cot(original: ET.Element, transform: dict) -> ET.Element:
     """
@@ -126,13 +125,14 @@ def transform_cot(original: ET.Element, transform: dict) -> ET.Element:
 
     return original
 
+
 def route_cot(data: dict, routing: dict, clitool: pytak.CLITool):
     queue_list = list(clitool.queues.keys())
     destination = routing.get("destination")
     if destination:
         route_queue = clitool.queues[destination].get("tx_queue")
-        data['tx'] = route_queue
+        data["tx"] = route_queue
     else:
         route_queue = clitool.queues[queue_list[0]].get("tx_queue")
-        data['tx'] = route_queue
+        data["tx"] = route_queue
     return data

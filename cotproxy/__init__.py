@@ -46,7 +46,7 @@ from .functions import (  # NOQA
     get_callsign,
     parse_cot_multi,
     create_tasks,
-    route_cot
+    route_cot,
 )
 
 from .utils import CPAPI

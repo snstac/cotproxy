@@ -169,7 +169,7 @@ class CPAPI:
         payload = {"uuid": uuid, "name": name}
         self._logger.info("Creating IconSet %s/%s", uuid, name)
         return self.request(endpoint, payload)
-    
+
     def create_queue(self, config: SectionProxy) -> Request:
         """
         Creates a COTProxy Queue.
