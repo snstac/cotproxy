@@ -49,13 +49,20 @@ def create_tasks(
 
     Returns
     -------
-    `set`
+    `workers_set`
         Set of PyTAK Worker classes for this application.
     """
     tf_queue: asyncio.Queue = asyncio.Queue()
-    net_worker = cotproxy.NetWorker(tf_queue, config)
-    tf_worker = cotproxy.COTProxyWorker(clitool.tx_queue, config, tf_queue)
-    return set([net_worker, tf_worker])
+    workers_set = set()
+    if config.get("IMPORT_OTHER_CONFIGS", pytak.DEFAULT_IMPORT_OTHER_CONFIGS):
+        cp_api = cotproxy.CPAPI(config.get("CPAPI_URL"))
+        for i in clitool.full_config.sections():
+            cp_api.create_queue(clitool.full_config[i])
+            workers_set.add(cotproxy.NetWorker(tf_queue, clitool.full_config[i]))
+    else:    
+        workers_set.append(cotproxy.NetWorker(tf_queue, config))
+    workers_set.add(cotproxy.COTProxyWorker(clitool, config, tf_queue))
+    return workers_set
 
 
 def parse_cot(msg: str) -> ET.Element:
@@ -69,10 +76,12 @@ def parse_cot_multi(msg: str) -> ET.Element:
 
 
 def get_callsign(msg) -> str:
-    return msg.find("detail").attrib.get(
-        "callsign", msg.find("detail").find("contact").attrib.get("callsign")
-    )
-
+    try:
+        return msg.find("detail").attrib.get(
+            "callsign", msg.find("detail").find("contact").attrib.get("callsign")
+        )
+    except:
+        return None
 
 def transform_cot(original: ET.Element, transform: dict) -> ET.Element:
     """
@@ -110,10 +119,20 @@ def transform_cot(original: ET.Element, transform: dict) -> ET.Element:
         __video = ET.Element("__video")
         __video.set("url", video.get("url"))
         original.append(__video)
-
     _cotproxy_ = ET.Element("_cotproxy_")
     _cotproxy_.set("tfd", str(tfd))
     _cotproxy_.set("node", platform.node())
     original.append(_cotproxy_)
 
     return original
+
+def route_cot(data: dict, routing: dict, clitool: pytak.CLITool):
+    queue_list = list(clitool.queues.keys())
+    destination = routing.get("destination")
+    if destination:
+        route_queue = clitool.queues[destination].get("tx_queue")
+        data['tx'] = route_queue
+    else:
+        route_queue = clitool.queues[queue_list[0]].get("tx_queue")
+        data['tx'] = route_queue
+    return data

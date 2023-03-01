@@ -46,7 +46,10 @@ from .functions import (  # NOQA
     get_callsign,
     parse_cot_multi,
     create_tasks,
+    route_cot
 )
+
+from .utils import CPAPI
 
 __author__ = "Greg Albrecht W2GMD <oss@undef.net>"
 __copyright__ = "Copyright 2022 Greg Albrecht"

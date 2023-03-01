@@ -78,7 +78,7 @@ setuptools.setup(
     long_description_content_type="text/x-rst",
     zip_safe=False,
     include_package_data=True,
-    install_requires=["pytak >= 5.1.0", "aiohttp==3.8.1"],
+    install_requires=["pytak >= 5.6.1", "aiohttp==3.8.3"],
     classifiers=[
         "Programming Language :: Python",
         "License :: OSI Approved :: Apache Software License",
