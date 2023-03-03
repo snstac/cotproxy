@@ -121,7 +121,7 @@ class NetWorker(pytak.Worker):
         while 1:
             data: bytes = await reader.readuntil("</event>".encode("UTF-8"))
             self._logger.debug("RX: %s", data)
-            data_dict = {"rx": self.config.name, "event": data, "tx": None}
+            data_dict = {"rx": self.config.name, "event": data, "tx": []}
             self.queue.put_nowait(data_dict)
 
     async def start_udp_listener(self, host, port):
@@ -259,7 +259,8 @@ class COTProxyWorker(pytak.QueueWorker):
             )
         data = cotproxy.route_cot(data, routing, self.clitool)
         if isinstance(event, ET.Element):
-            await self.put_queue(ET.tostring(event), data["tx"])
+            for i in data["tx"]:
+                await self.put_queue(ET.tostring(event), i)
         else:
             self._logger.warning("Incoming event was not ET.Element")
 

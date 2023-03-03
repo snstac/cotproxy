@@ -130,9 +130,10 @@ def route_cot(data: dict, routing: dict, clitool: pytak.CLITool):
     queue_list = list(clitool.queues.keys())
     destination = routing.get("destination")
     if destination:
-        route_queue = clitool.queues[destination].get("tx_queue")
-        data["tx"] = route_queue
+        for i in destination:
+            route_queue = clitool.queues[i].get("tx_queue")
+            data["tx"].append(route_queue)
     else:
         route_queue = clitool.queues[queue_list[0]].get("tx_queue")
-        data["tx"] = route_queue
+        data["tx"].append(route_queue)
     return data
