@@ -56,7 +56,7 @@ def create_tasks(config: SectionProxy, clitool: pytak.CLITool) -> Set[pytak.Work
         cp_api = cotproxy.CPAPI(config.get("CPAPI_URL"))
         for i in clitool.full_config.sections():
             cp_api.create_queue(clitool.full_config[i])
-            workers_set.add(cotproxy.NetWorker(tf_queue, clitool.full_config[i]))
+            workers_set.add(cotproxy.NetWorker(tf_queue, clitool.full_config[i], clitool))
     else:
         workers_set.append(cotproxy.NetWorker(tf_queue, config))
     workers_set.add(cotproxy.COTProxyWorker(clitool, config, tf_queue))

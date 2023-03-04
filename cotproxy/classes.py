@@ -99,7 +99,12 @@ class NetListener(asyncio.Protocol):
 class NetWorker(pytak.Worker):
 
     """Starts an incoming network data worker."""
-
+    def __init__(self, queue: asyncio.Queue, config, clitool: pytak.CLITool ) -> None:
+        #super().__init__(queue, config)
+        self.queue = queue
+        self.clitool = clitool
+        self.config = config
+        
     async def run(self, number_of_iterations=-1):
         """Runs the Thread."""
 
@@ -117,11 +122,16 @@ class NetWorker(pytak.Worker):
         elif "udp" in listen_url:
             await self.start_udp_listener(host, port)
 
-    async def handle_rx(self, reader, writer):
+    async def handle_rx(self, reader, writer, recv_queue: asyncio.Queue = None):
         while 1:
-            data: bytes = await reader.readuntil("</event>".encode("UTF-8"))
-            self._logger.debug("RX: %s", data)
-            data_dict = {"rx": self.config.name, "event": data, "tx": []}
+            if recv_queue == None:
+                data: bytes = await reader.readuntil("</event>".encode("UTF-8"))
+                self._logger.debug("RX: %s", data)
+                data_dict = {"rx": self.config.name, "event": data, "tx": []}
+            else:
+                await asyncio.sleep(pytak.DEFAULT_MIN_ASYNC_SLEEP)
+                data = await recv_queue.get()
+                data_dict = {"rx": self.config.name, "event": data, "tx": []}
             self.queue.put_nowait(data_dict)
 
     async def start_udp_listener(self, host, port):
@@ -141,8 +151,7 @@ class NetWorker(pytak.Worker):
     async def start_tcp_listener(self, host, port):
         """Starts a TCP Network Listener."""
         if self.config.getboolean("LISTEN_TO_SERVER"):
-            reader, writer = await pytak.protocol_factory(self.config)
-            await self.handle_rx(reader, writer)
+            await self.handle_rx(None, None, self.clitool.queues[self.config.name].get("rx_queue"))
         else:
             server = await asyncio.start_server(self.handle_rx, host, port)
 
@@ -191,14 +200,7 @@ class COTProxyWorker(pytak.QueueWorker):
         tf_msg = ET.fromstring(tf_msg.decode("utf-8"))
         data_dict["event"] = tf_msg
         self._logger.debug('Got tf_msg="%s"', ET.tostring(tf_msg))
-        uid: str = tf_msg.attrib.get("uid")
-        stale: str = tf_msg.attrib.get("stale")
-        brain = self.seen_cots.get(uid, False)
-        if brain == stale:
-            return
-        if tf_msg:
-            self.seen_cots[uid] = stale
-            await self.handle_data(data_dict, use_proxy)
+        await self.handle_data(data_dict, use_proxy)
 
     async def create_co_and_tf(self, event: ET.Element) -> None:
         """
@@ -236,6 +238,7 @@ class COTProxyWorker(pytak.QueueWorker):
 
                 async with self.session.post(tf_url, json=tf_payload) as resp:
                     self._logger.debug("%s call status: %s", tf_url, resp.status)
+        await self.pass_all(event)
 
     async def transform_event(self, data: dict, transform: dict, routing: dict) -> None:
         """
@@ -309,7 +312,6 @@ class COTProxyWorker(pytak.QueueWorker):
                         await self.transform_event(
                             data, await response.json(), await routes_response.json()
                         )
-        await self.pass_all(data["event"])
 
     async def pass_all(self, event: ET.ElementTree) -> None:
         """Passes non-transformed COT Events, if self.pass_all is True."""

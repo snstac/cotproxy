@@ -33,3 +33,4 @@ redis-server/
 __pycache__
 .ipynb_checkpoints/
 config.ini
+private_key.pem
