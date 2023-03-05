@@ -64,7 +64,10 @@ class CPAPI:
         self, url: str, kc_file: str = cotproxy.DEFAULT_KNOWN_CRAFT_FILE
     ) -> None:
         self.url = url.rstrip("/")
-        self.known_craft = read_known_craft(kc_file)
+        try:
+            self.known_craft = read_known_craft(kc_file)
+        except:
+            self.known_craft = None
         self._logger.info("Using URL %s with Known Craft %s", self.url, kc_file)
 
     def request(
@@ -165,6 +168,27 @@ class CPAPI:
             return
         payload = {"uuid": uuid, "name": name}
         self._logger.info("Creating IconSet %s/%s", uuid, name)
+        return self.request(endpoint, payload)
+
+    def create_queue(self, config: SectionProxy) -> Request:
+        """
+        Creates a COTProxy Queue.
+
+        Parameters
+        ----------
+        queue : `str`
+            Name of the Queue/Config.
+
+        Returns
+        -------
+        `urllib.request.Request`
+            Results of `make_cp_request()` call.
+        """
+        endpoint: str = "qs"
+        if self.exists(endpoint, config.name):
+            return
+        payload = {"queue": config.name}
+        self._logger.info("Creating Queue %s", config.name)
         return self.request(endpoint, payload)
 
     def create_icon(self, iconset_uuid: str, name: str) -> Request:
