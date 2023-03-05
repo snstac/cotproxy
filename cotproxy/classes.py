@@ -258,7 +258,7 @@ class COTProxyWorker(pytak.QueueWorker):
             if icon:
                 transform["icon"] = await self.get_icon(icon)
             event: ET.Element = cotproxy.transform_cot(
-                event, transform, self.clitool, routing
+                event, transform
             )
         data = cotproxy.route_cot(data, routing, self.clitool)
         if isinstance(event, ET.Element):
