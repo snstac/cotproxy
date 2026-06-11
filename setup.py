@@ -31,7 +31,7 @@ import sys
 import setuptools
 
 __title__ = "cotproxy"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Greg Albrecht W2GMD <oss@undef.net>"
 __copyright__ = "Copyright 2022 Greg Albrecht"
 __license__ = "Apache License, Version 2.0"
@@ -78,7 +78,7 @@ setuptools.setup(
     long_description_content_type="text/x-rst",
     zip_safe=False,
     include_package_data=True,
-    install_requires=["pytak >= 5.1.0", "aiohttp==3.8.1"],
+    install_requires=["pytak >= 7.3.0", "aiohttp >= 3.9, < 4"],
     classifiers=[
         "Programming Language :: Python",
         "License :: OSI Approved :: Apache Software License",
