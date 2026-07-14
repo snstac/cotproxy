@@ -1,3 +1,9 @@
+.. warning::
+   **DEPRECATED & UNSUPPORTED**: COTProxy is no longer maintained by Sensors & Signals LLC
+   and this repository has been archived. No further releases, fixes or support will be
+   provided. For maintained TAK tooling see `PyTAK <https://github.com/snstac/pytak>`_ and
+   the other `snstac projects <https://github.com/snstac>`_.
+
 ********
 COTProxy
 ********
